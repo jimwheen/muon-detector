@@ -6,7 +6,7 @@ During my first co-op at ASL Environmental Sciences, I gained experience working
 ## Pulse Width Optimization and Circuit Modifications
 The stock Geiger counter modules output a 1 ms pulse which may be too wide for effective coincidence detection, increasing false positives and missed muon events. Since muons travel near the speed of light, minimizing the detection window is critical.
 ### Theoretical vs. Practical Analysis
-From the module schematic, I identified a 555 timer in a monostable configuration, controlling the pulse width, as shown below:
+From the module schematic, I identified a 555 timer in a monostable configuration, controlling the pulse width, as shown below:  
 ![Pulse Width Circuit in Geiger Counter Module](pulse_circuit.png)
 ### Adjusted Timing Window
 I replaced capcitor C22 (true value 1nF not 100nF) with a 180pF capacitor in both Geiger counter units, as show below:
