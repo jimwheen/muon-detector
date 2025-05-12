@@ -1,33 +1,32 @@
-# Muon Detection Project
+# Muon Detection Project (In Progress)
 ## Project Description
-A muon detector designed for instructional use and data analysis, using inexpensive Geiger counter modules. By stacking two modules and narrowing their field of view, we can detect muons (high-energy cosmic particles capable of penetrating both counters)  through coincidence detection. The signal outputs are processed through a custom-built coincidence detection circuit.
+A muon detector designed for instructional use and data analysis, using inexpensive Geiger counter modules. By stacking two modules vertically, we can detect muons (high-energy cosmic particles capable of penetrating both counters) through coincidence detection. The signal outputs are processed through a custom-built coincidence detection circuit.
 ## Background
-During my first co-op at ASL Environmental Sciences, I gained experience working with time-series datasets and MATLAB. Inspired to continue this skill development, I began a personal project. A discussion with my father (a physics teacher) about how students struggle with understanding muons in special relativity led to the idea of building an affordable muon detector for his classroom. My design follows a similair layout to this paper discussing muon detection. With a difference in coincidence window size.
+During my first co-op at ASL Environmental Sciences, I gained experience working with time-series datasets and MATLAB. Inspired to continue devloping these skills, I began a personal project. A discussion with my father (a physics teacher) about how students struggle with understanding muons in special relativity led to the idea of building an affordable muon detector for his classroom. My design follows a similair layout to a published paper on muon detetcion, with some differences in the coincidence window size.
 ## Pulse Width Optimization and Circuit Modifications
-The stock Geiger counter modules output a 1 ms pulse, a wide window for coincidence detection which increases the chance of false positives and missed muon events. Since muons travel at nearly the speed of light, minimizing the time window is critical for accurate detection.
+The stock Geiger counter modules output a 1 ms pulse which may be too wide for effective coincidence detection, increasing false positives and missed muon events. Since muons travel near the speed of light, minimizing the detection window is critical.
 ### Theoretical vs. Practical Analysis
-From the module schematic, I identified a 555 timer in a monostable configuration, controlling the pulse width, as seen below:
+From the module schematic, I identified a 555 timer in a monostable configuration, controlling the pulse width, as shown below:
 ![Pulse Width Circuit in Geiger Counter Module](pulse_circuit.png)
 ### Adjusted Timing Window
-I replaced capcitor C22 (true value 1nF not 100nF) with a 180pF capacitor in both geiger counter units, as show below:
+I replaced capcitor C22 (true value 1nF not 100nF) with a 180pF capacitor in both Geiger counter units, as show below:
 ![Updated monostable configuration](capacitor.png)
 ### Pulse Width Analysis and Discrepancy
-During circuit analysis, I identified a significant discrepancy between theoretical and measured pulse widths:
-
-1. **Identified Monostable Configuration** in the stock Geiger counter modules using 555 timer ICs  
-Which has equation: `T = 1.1 × R × C`
+During circuit analysis, I found a discrepancy between theoretical and measured pulse widths:
+1. **Identified Monostable Configuration** in the stock modules using 555 timer ICs  
+Formula: `T = 1.1 × R × C`
 3. **Calculated Expected Pulse Width**:  
    `1.1 × 1nF × 470kΩ = 517μs`
-   (before replacing C22)  
+   (before replacement)  
    `1.1 × 180pF × 470kΩ = 93μs`
-   (after replacing C22)
+   (after replacement)
 4. **Measured Pulse Width (using vintage oscilliscope)**:  
-   ~ 1ms (before replacing C22)  
-   ~ 400μs (after replacing C22)
-5. **Potential Causes Under Investigation**
-   - Incorrect circuit schematic
-   - Component tolerance variations
-   - Measurement equipment limitations
+   ~ 1ms (before)  
+   ~ 400μs (after)
+5. **Possible Explanantions Under Investigation**
+   - Incorrect schematic or incorrect component values
+   - Tolerance in resistor/capacitor values
+   - Measurement limitations with aging test equipment
   
 ## Detection Methods Comparison
 ### Software Approach (Arduino Uno):
@@ -35,23 +34,40 @@ Which has equation: `T = 1.1 × R × C`
   attachInterrupt(digitalPinToInterrupt(2), tube_events1, FALLING);
   attachInterrupt(digitalPinToInterrupt(3), tube_events2, FALLING);
 ```
-**Concurrency and Overloading Constraints**  
-  - Sequential checking of pin status creates detection blind spots
-  - Loop execution can obscure simultaneous events (e.g. Serial.print() or sensor reads blocking for ~50-200μs)
+**Limitations**  
+  - Sequential pin checking creates detection blind spots
+  - Loop execution (e.g. Serial.print()) can block detection for ~50-200μs
   - Resource contention with concurrent data logging and environmental sensor polling
 
 ### Hardware Solution:
   - Sub-microsecond response time
   - True parallel signal processing
-  - Configurable time window sizes via passive components
-I used the CD4093 IC chip which is a schmidtt trigger NAND which accounts for potential signal variations that remain after the 555 chip processing. I tested the circuit using a simple breadboard implementation and it seems to run as expected.
+  - Configurable detection window via passive components
+         
+I used a CD4093 IC (Schmidtt-trigger NAND) to account for residual signal variations post 555 timer. The breadboard implementation functions as expected:
 ![Updated coincidence testing](test.png)
 
 ## Current and Future Plans
 ### Coincidence Detection Circuit
-My coincidence detection circuit takes output from each of the 555 timers on the respective modules from which I soldered a connector wire. These connections will be input to the nand gate and the result will be inverted. The current circuit schematic can be seen below:
+My circuit takes pulse outputs from each Geiger module (soldered from the 555 timer output) and inputs them into the CD4093 NAND gate, and inverts the result.
 
+![Current Edit of the Coincidence Detection Circuit](coincidence.png)
 
+The NAND logic ensures output only during true coinicidences. An LED flashes upon detection. Resistors prevent floating inputs, while switches and capacitors allow pulse window adjustment.
 
+By adding the capacitors in parallel with the 180pF timing capacitor via a switch, I can widen the pulse. For example:
 
+- **820pF**: approximates original stock pulse width
+- **100nF**: greatly increases pulse width (for demo purposes)
 
+This allows for statistical testing on how pulse width impacts detection rates. For educational demos, longer windows can increase count rate, even if it allows some false positives.
+
+### Circuit Implementation and Data Collection
+I'm continuing to test the circuit and investigate pulse timing inconsistencies. Aswell as, determining an optimal seperation distance between the two modules to determine an appropriate field of view for the device. I'm also designing a PCB in KiCad for a more polished, modular unit.
+
+Once finalized, the system will:
+- Log data via Arduino Uno to an SD card
+- Timestamp events with a real-time clock module
+- Optionally incorporate a BMP280 sensor to study how muon detection varies with atmospheric pressure
+
+All data will be saved as CSV and analyzed using MATLAB
