@@ -9,7 +9,7 @@ The stock Geiger counter modules output a 1 ms pulse which may be too wide for e
 From the module schematic, I identified a 555 timer in a monostable configuration, controlling the pulse width, as shown below:  
 ![Pulse Width Circuit in Geiger Counter Module](pulse_circuit.png)
 ### Adjusted Timing Window
-I replaced capcitor C22 (true value 1nF not 100nF) with a 180pF capacitor in both Geiger counter units, as show below:
+I replaced capacitor C22 (true value 1nF not 100nF) with a 180pF capacitor in both Geiger counter units, as shown below:
 ![Updated monostable configuration](capacitor.png)
 ### Pulse Width Analysis and Discrepancy
 During circuit analysis, I found a discrepancy between theoretical and measured pulse widths:
@@ -70,4 +70,4 @@ Once finalized, the system will:
 - Timestamp events with a real-time clock module
 - Optionally incorporate a BMP280 sensor to study how muon detection varies with atmospheric pressure
 
-All data will be saved as CSV and analyzed using MATLAB
+All data will be saved as CSV and analyzed using MATLAB.
