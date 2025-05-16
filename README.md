@@ -45,7 +45,7 @@ Formula: `T = 1.1 × R × C`
   - Configurable detection window via passive components
          
 I used a CD4093 IC (Schmidtt-trigger NAND) to account for residual signal variations post 555 timer. The breadboard implementation functions as expected:
-![Updated coincidence testing](test.png)
+![Updated coincidence testing](geiger_unit.png)
 
 ## Current and Future Plans
 ### Coincidence Detection Circuit
