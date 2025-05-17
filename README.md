@@ -10,7 +10,7 @@ From the module schematic, I identified a 555 timer in a monostable configuratio
 ![Pulse Width Circuit in Geiger Counter Module](pulse_circuit.png)
 ### Adjusted Timing Window
 I replaced capacitor C22 (true value 1nF not 100nF) with a 180pF capacitor in both Geiger counter units, as shown below:
-![Updated monostable configuration](capacitor.png)
+![Updated monostable configuration](capacitor_swap.png)
 ### Pulse Width Analysis and Discrepancy
 During circuit analysis, I found a discrepancy between theoretical and measured pulse widths:
 1. **Identified Monostable Configuration** in the stock modules using 555 timer ICs  
